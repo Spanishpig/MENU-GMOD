@@ -1,0 +1,118 @@
+-- Fonction principale pour créer le menu
+local function CreateCustomMenu()
+    -- Création du cadre principal
+    local frame = vgui.Create("DFrame")
+    frame:SetTitle("")
+    frame:SetSize(800, 500) -- Taille similaire à l'exemple
+    frame:Center()
+    frame:MakePopup()
+    frame:SetDraggable(true)
+    frame:ShowCloseButton(true)
+    frame.Paint = function(self, w, h)
+        -- Fond principal
+        draw.RoundedBox(6, 0, 0, w, h, Color(25, 25, 25, 255))
+        -- Barre supérieure
+        draw.RoundedBox(6, 0, 0, w, 40, Color(35, 35, 35, 255))
+        -- Titre avec logo
+        draw.SimpleText("GENERAL", "DermaDefaultBold", w / 2, 20, Color(200, 200, 200), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    end
+
+    -- Panneau de gauche (catégories)
+    local sidePanel = vgui.Create("DPanel", frame)
+    sidePanel:SetSize(100, frame:GetTall() - 40)
+    sidePanel:SetPos(0, 40)
+    sidePanel.Paint = function(self, w, h)
+        draw.RoundedBox(0, 0, 0, w, h, Color(35, 35, 35, 255))
+    end
+
+    -- Boutons de catégories
+    local categories = { "RAGE", "LEGIT", "VISUALS", "MISC", "SKINS", "SCRIPTS" }
+    local yOffset = 10
+    for _, category in ipairs(categories) do
+        local button = vgui.Create("DButton", sidePanel)
+        button:SetText(category)
+        button:SetFont("DermaDefaultBold")
+        button:SetTextColor(Color(200, 200, 200))
+        button:SetSize(sidePanel:GetWide(), 40)
+        button:SetPos(0, yOffset)
+        button.Paint = function(self, w, h)
+            if self:IsHovered() then
+                draw.RoundedBox(0, 0, 0, w, h, Color(50, 50, 50, 255)) -- Survol
+            else
+                draw.RoundedBox(0, 0, 0, w, h, Color(35, 35, 35, 255)) -- Normal
+            end
+        end
+        yOffset = yOffset + 45
+    end
+
+    -- Panneau principal (contenu)
+    local mainPanel = vgui.Create("DPanel", frame)
+    mainPanel:SetSize(frame:GetWide() - sidePanel:GetWide(), frame:GetTall() - 40)
+    mainPanel:SetPos(sidePanel:GetWide(), 40)
+    mainPanel.Paint = function(self, w, h)
+        draw.RoundedBox(0, 0, 0, w, h, Color(30, 30, 30, 255))
+    end
+
+    -- Sous-catégories (exemple pour "Rage")
+    local settingsPanel = vgui.Create("DPanel", mainPanel)
+    settingsPanel:SetSize(mainPanel:GetWide() / 2 - 10, mainPanel:GetTall() - 10)
+    settingsPanel:SetPos(5, 5)
+    settingsPanel.Paint = function(self, w, h)
+        draw.RoundedBox(6, 0, 0, w, h, Color(35, 35, 35, 255))
+    end
+
+    -- Exemple d'ajout de sliders, cases et autres contrôles dans le panneau "Rage"
+    local enableCheckbox = vgui.Create("DCheckBoxLabel", settingsPanel)
+    enableCheckbox:SetText("Enable")
+    enableCheckbox:SetPos(10, 10)
+    enableCheckbox:SetSize(200, 20)
+    enableCheckbox:SetTextColor(Color(200, 200, 200))
+
+    local fovSlider = vgui.Create("DNumSlider", settingsPanel)
+    fovSlider:SetText("FOV")
+    fovSlider:SetPos(10, 40)
+    fovSlider:SetSize(settingsPanel:GetWide() - 20, 40)
+    fovSlider:SetMin(0)
+    fovSlider:SetMax(180)
+    fovSlider:SetDecimals(0)
+
+    local autoShootCheckbox = vgui.Create("DCheckBoxLabel", settingsPanel)
+    autoShootCheckbox:SetText("Auto Shoot")
+    autoShootCheckbox:SetPos(10, 80)
+    autoShootCheckbox:SetSize(200, 20)
+    autoShootCheckbox:SetTextColor(Color(200, 200, 200))
+
+    -- Ajout d'autres contrôles (exemple : dropdown)
+    local dropdown = vgui.Create("DComboBox", settingsPanel)
+    dropdown:SetPos(10, 110)
+    dropdown:SetSize(settingsPanel:GetWide() - 20, 25)
+    dropdown:SetValue("Default")
+    dropdown:AddChoice("Option 1")
+    dropdown:AddChoice("Option 2")
+    dropdown:AddChoice("Option 3")
+
+    -- Deuxième panneau (anti-aim)
+    local antiaimPanel = vgui.Create("DPanel", mainPanel)
+    antiaimPanel:SetSize(mainPanel:GetWide() / 2 - 10, mainPanel:GetTall() - 10)
+    antiaimPanel:SetPos(settingsPanel:GetWide() + 10, 5)
+    antiaimPanel.Paint = function(self, w, h)
+        draw.RoundedBox(6, 0, 0, w, h, Color(35, 35, 35, 255))
+    end
+
+    -- Exemple de contrôles pour l'anti-aim
+    local enableAntiAimCheckbox = vgui.Create("DCheckBoxLabel", antiaimPanel)
+    enableAntiAimCheckbox:SetText("Enable Antiaim")
+    enableAntiAimCheckbox:SetPos(10, 10)
+    enableAntiAimCheckbox:SetSize(200, 20)
+    enableAntiAimCheckbox:SetTextColor(Color(200, 200, 200))
+
+    local pitchDropdown = vgui.Create("DComboBox", antiaimPanel)
+    pitchDropdown:SetPos(10, 40)
+    pitchDropdown:SetSize(antiaimPanel:GetWide() - 20, 25)
+    pitchDropdown:SetValue("None")
+    pitchDropdown:AddChoice("Option 1")
+    pitchDropdown:AddChoice("Option 2")
+end
+
+-- Commande pour ouvrir le menu
+concommand.Add("open_custom_menu", CreateCustomMenu)
