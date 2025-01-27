@@ -1,0 +1,144 @@
+local function CreateCustomMenu()
+    -- Création du cadre principal
+    local frame = vgui.Create("DFrame")
+    frame:SetTitle("")
+    frame:SetSize(800, 600) -- Dimensions globales
+    frame:Center()
+    frame:MakePopup()
+    frame:SetDraggable(false)
+    frame:ShowCloseButton(false)
+    frame.Paint = function(self, w, h)
+        -- Fond principal
+        draw.RoundedBox(6, 0, 0, w, h, Color(30, 30, 30, 255))
+        -- Barre supérieure arc-en-ciel
+        surface.SetDrawColor(255, 255, 255)
+        surface.SetMaterial(Material("gui/gradient")) -- Remplacez par un gradient
+        surface.DrawTexturedRect(0, 0, w, 5)
+    end
+
+    -- Panneau latéral (icônes des catégories)
+    local sidePanel = vgui.Create("DPanel", frame)
+    sidePanel:SetSize(100, frame:GetTall() - 10)
+    sidePanel:SetPos(10, 10)
+    sidePanel.Paint = function(self, w, h)
+        draw.RoundedBox(6, 0, 0, w, h, Color(40, 40, 40, 255)) -- Fond
+    end
+
+    -- Icônes dans le panneau latéral
+    local icons = {
+        "path/to/aimbot_icon.png", -- Remplacez par le chemin de vos icônes
+        "path/to/visuals_icon.png",
+        "path/to/misc_icon.png",
+        "path/to/anti_aim_icon.png"
+    }
+
+    local yOffset = 20
+    for _, iconPath in ipairs(icons) do
+        local icon = vgui.Create("DImage", sidePanel)
+        icon:SetImage(iconPath)
+        icon:SetSize(64, 64)
+        icon:SetPos(18, yOffset)
+        yOffset = yOffset + 70
+    end
+
+    -- Panneau principal (options)
+    local mainPanel = vgui.Create("DPanel", frame)
+    mainPanel:SetSize(frame:GetWide() - sidePanel:GetWide() - 30, frame:GetTall() - 20)
+    mainPanel:SetPos(sidePanel:GetWide() + 20, 10)
+    mainPanel.Paint = function(self, w, h)
+        draw.RoundedBox(6, 0, 0, w, h, Color(35, 35, 35, 255)) -- Fond
+    end
+
+    -- Section gauche (Aimbot)
+    local aimbotPanel = vgui.Create("DPanel", mainPanel)
+    aimbotPanel:SetSize(mainPanel:GetWide() / 2 - 15, mainPanel:GetTall() - 20)
+    aimbotPanel:SetPos(10, 10)
+    aimbotPanel.Paint = function(self, w, h)
+        draw.RoundedBox(6, 0, 0, w, h, Color(40, 40, 40, 255)) -- Fond
+        draw.SimpleText("Aimbot", "DermaDefaultBold", 10, 10, Color(200, 200, 200), TEXT_ALIGN_LEFT)
+    end
+
+    -- Section droite (Other + Anti-Aim)
+    local otherPanel = vgui.Create("DPanel", mainPanel)
+    otherPanel:SetSize(mainPanel:GetWide() / 2 - 15, mainPanel:GetTall() - 20)
+    otherPanel:SetPos(aimbotPanel:GetWide() + 20, 10)
+    otherPanel.Paint = function(self, w, h)
+        draw.RoundedBox(6, 0, 0, w, h, Color(40, 40, 40, 255)) -- Fond
+        draw.SimpleText("Other", "DermaDefaultBold", 10, 10, Color(200, 200, 200), TEXT_ALIGN_LEFT)
+    end
+
+    -- Ajout des éléments au panneau "Aimbot"
+    local enabledCheckbox = vgui.Create("DCheckBoxLabel", aimbotPanel)
+    enabledCheckbox:SetText("Enabled")
+    enabledCheckbox:SetPos(10, 40)
+    enabledCheckbox:SetSize(200, 20)
+    enabledCheckbox:SetTextColor(Color(200, 200, 200))
+
+    local targetSelection = vgui.Create("DComboBox", aimbotPanel)
+    targetSelection:SetPos(10, 70)
+    targetSelection:SetSize(200, 20)
+    targetSelection:SetValue("Target selection")
+    targetSelection:AddChoice("Distance")
+    targetSelection:AddChoice("Health")
+
+    local hitboxCombo = vgui.Create("DComboBox", aimbotPanel)
+    hitboxCombo:SetPos(10, 100)
+    hitboxCombo:SetSize(200, 20)
+    hitboxCombo:SetValue("Hitbox")
+    hitboxCombo:AddChoice("Head")
+    hitboxCombo:AddChoice("Body")
+
+    local autofireCheckbox = vgui.Create("DCheckBoxLabel", aimbotPanel)
+    autofireCheckbox:SetText("Auto Fire")
+    autofireCheckbox:SetPos(10, 130)
+    autofireCheckbox:SetSize(200, 20)
+    autofireCheckbox:SetTextColor(Color(200, 200, 200))
+
+    -- Sliders
+    local minDamageSlider = vgui.Create("DNumSlider", aimbotPanel)
+    minDamageSlider:SetText("Minimum Damage")
+    minDamageSlider:SetPos(10, 160)
+    minDamageSlider:SetSize(aimbotPanel:GetWide() - 20, 30)
+    minDamageSlider:SetMin(0)
+    minDamageSlider:SetMax(100)
+    minDamageSlider:SetDecimals(0)
+
+    -- Ajout des éléments au panneau "Other"
+    local removeSpreadCheckbox = vgui.Create("DCheckBoxLabel", otherPanel)
+    removeSpreadCheckbox:SetText("Remove Spread")
+    removeSpreadCheckbox:SetPos(10, 40)
+    removeSpreadCheckbox:SetSize(200, 20)
+    removeSpreadCheckbox:SetTextColor(Color(200, 200, 200))
+
+    local removeRecoilCheckbox = vgui.Create("DCheckBoxLabel", otherPanel)
+    removeRecoilCheckbox:SetText("Remove Recoil")
+    removeRecoilCheckbox:SetPos(10, 70)
+    removeRecoilCheckbox:SetSize(200, 20)
+    removeRecoilCheckbox:SetTextColor(Color(200, 200, 200))
+
+    -- Anti-Aim section
+    local antiAimPanel = vgui.Create("DPanel", otherPanel)
+    antiAimPanel:SetSize(otherPanel:GetWide() - 20, 100)
+    antiAimPanel:SetPos(10, 100)
+    antiAimPanel.Paint = function(self, w, h)
+        draw.RoundedBox(6, 0, 0, w, h, Color(35, 35, 35, 255))
+        draw.SimpleText("Anti-Aim", "DermaDefaultBold", 10, 10, Color(200, 200, 200), TEXT_ALIGN_LEFT)
+    end
+
+    local enableAntiAimCheckbox = vgui.Create("DCheckBoxLabel", antiAimPanel)
+    enableAntiAimCheckbox:SetText("Enabled")
+    enableAntiAimCheckbox:SetPos(10, 30)
+    enableAntiAimCheckbox:SetSize(200, 20)
+    enableAntiAimCheckbox:SetTextColor(Color(200, 200, 200))
+
+    local pitchCombo = vgui.Create("DComboBox", antiAimPanel)
+    pitchCombo:SetPos(10, 60)
+    pitchCombo:SetSize(antiAimPanel:GetWide() - 20, 20)
+    pitchCombo:SetValue("Pitch")
+    pitchCombo:AddChoice("None")
+    pitchCombo:AddChoice("Up")
+    pitchCombo:AddChoice("Down")
+end
+
+-- Commande pour ouvrir le menu
+concommand.Add("open_custom_menu", CreateCustomMenu)
