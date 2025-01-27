@@ -1,0 +1,146 @@
+--bug menu ferme pas
+-- Fonction principale pour créer le menu
+local function CreateAccurateMenu()
+    -- Création du cadre principal
+    local frame = vgui.Create("DFrame")
+    frame:SetTitle("")
+    frame:SetSize(800, 500) -- Dimensions du cadre
+    frame:Center()
+    frame:MakePopup()
+    frame:SetDraggable(true)
+    frame:ShowCloseButton(false)
+    frame.Paint = function(self, w, h)
+        -- Fond principal
+        draw.RoundedBox(6, 0, 0, w, h, Color(25, 25, 25, 255))
+        -- Barre supérieure
+        draw.RoundedBox(0, 0, 0, w, 25, Color(35, 35, 35, 255))
+    end
+
+    -- Logo (supérieur)
+    local logo = vgui.Create("DImage", frame)
+    logo:SetImage("path/to/your/logo.png") -- Remplacez par le chemin de votre logo
+    logo:SetSize(24, 24)
+    logo:SetPos(5, 0)
+
+    -- Catégories (panneau gauche)
+    local leftPanel = vgui.Create("DPanel", frame)
+    leftPanel:SetSize(120, frame:GetTall() - 25)
+    leftPanel:SetPos(5, 25)
+    leftPanel.Paint = function(self, w, h)
+        draw.RoundedBox(0, 0, 0, w, h, Color(35, 35, 35, 255))
+    end
+
+    -- Boutons pour les catégories
+    local categories = { "Rage", "Legit", "Visuals", "Misc", "Skins", "Scripts" }
+    local buttons = {}
+    local yOffset = 10
+
+    for _, category in ipairs(categories) do
+        local button = vgui.Create("DButton", leftPanel)
+        button:SetText(category)
+        button:SetSize(leftPanel:GetWide() - 10, 30)
+        button:SetPos(5, yOffset)
+        button:SetTextColor(Color(200, 200, 200))
+        button.Paint = function(self, w, h)
+            if self:IsHovered() then
+                draw.RoundedBox(0, 0, 0, w, h, Color(60, 60, 60, 255))
+            else
+                draw.RoundedBox(0, 0, 0, w, h, Color(50, 50, 50, 255))
+            end
+        end
+        table.insert(buttons, button)
+        yOffset = yOffset + 40
+    end
+
+    -- Panneau principal pour les options
+    local mainPanel = vgui.Create("DPanel", frame)
+    mainPanel:SetSize(frame:GetWide() - leftPanel:GetWide() - 20, frame:GetTall() - 30)
+    mainPanel:SetPos(leftPanel:GetWide() + 15, 25)
+    mainPanel.Paint = function(self, w, h)
+        draw.RoundedBox(0, 0, 0, w, h, Color(30, 30, 30, 255))
+    end
+
+    -- Sous-sections de "Rage" (exemple)
+    local rageSettings = {
+        { type = "checkbox", label = "Enable", default = false, pos = { 10, 10 } },
+        { type = "slider", label = "FOV", min = 0, max = 180, decimals = 0, pos = { 10, 50 }, default = 90 },
+        { type = "checkbox", label = "Auto Shoot", default = false, pos = { 10, 90 } },
+        { type = "checkbox", label = "Auto Stop", default = false, pos = { 10, 130 } },
+        { type = "checkbox", label = "Auto Crouch", default = false, pos = { 10, 170 } }
+    }
+
+    -- Panneau des options Rage
+    local ragePanel = vgui.Create("DPanel", mainPanel)
+    ragePanel:SetSize(mainPanel:GetWide() / 2 - 10, mainPanel:GetTall() - 10)
+    ragePanel:SetPos(5, 5)
+    ragePanel.Paint = function(self, w, h)
+        draw.RoundedBox(6, 0, 0, w, h, Color(35, 35, 35, 255))
+    end
+
+    -- Remplir les options dans le panneau Rage
+    for _, setting in ipairs(rageSettings) do
+        if setting.type == "checkbox" then
+            local checkbox = vgui.Create("DCheckBoxLabel", ragePanel)
+            checkbox:SetText(setting.label)
+            checkbox:SetPos(setting.pos[1], setting.pos[2])
+            checkbox:SetSize(200, 20)
+            checkbox:SetValue(setting.default and 1 or 0)
+            checkbox:SetTextColor(Color(200, 200, 200))
+        elseif setting.type == "slider" then
+            local slider = vgui.Create("DNumSlider", ragePanel)
+            slider:SetText(setting.label)
+            slider:SetPos(setting.pos[1], setting.pos[2])
+            slider:SetSize(ragePanel:GetWide() - 20, 40)
+            slider:SetMin(setting.min)
+            slider:SetMax(setting.max)
+            slider:SetDecimals(setting.decimals)
+            slider:SetValue(setting.default)
+        end
+    end
+
+    -- Panneau des options Anti-Aim
+    local antiaimPanel = vgui.Create("DPanel", mainPanel)
+    antiaimPanel:SetSize(mainPanel:GetWide() / 2 - 10, mainPanel:GetTall() - 10)
+    antiaimPanel:SetPos(ragePanel:GetWide() + 10, 5)
+    antiaimPanel.Paint = function(self, w, h)
+        draw.RoundedBox(6, 0, 0, w, h, Color(35, 35, 35, 255))
+    end
+
+    -- Options Anti-Aim (exemple)
+    local yawSettings = {
+        { type = "checkbox", label = "Enable Antiaim", default = false, pos = { 10, 10 } },
+        { type = "dropdown", label = "Yaw", choices = { "None", "Viewangle" }, pos = { 10, 50 } },
+        { type = "slider", label = "Desync Amount", min = 0, max = 100, decimals = 0, pos = { 10, 90 }, default = 0 }
+    }
+
+    for _, setting in ipairs(yawSettings) do
+        if setting.type == "checkbox" then
+            local checkbox = vgui.Create("DCheckBoxLabel", antiaimPanel)
+            checkbox:SetText(setting.label)
+            checkbox:SetPos(setting.pos[1], setting.pos[2])
+            checkbox:SetSize(200, 20)
+            checkbox:SetValue(setting.default and 1 or 0)
+            checkbox:SetTextColor(Color(200, 200, 200))
+        elseif setting.type == "dropdown" then
+            local dropdown = vgui.Create("DComboBox", antiaimPanel)
+            dropdown:SetPos(setting.pos[1], setting.pos[2])
+            dropdown:SetSize(antiaimPanel:GetWide() - 20, 25)
+            dropdown:SetValue("None")
+            for _, choice in ipairs(setting.choices) do
+                dropdown:AddChoice(choice)
+            end
+        elseif setting.type == "slider" then
+            local slider = vgui.Create("DNumSlider", antiaimPanel)
+            slider:SetText(setting.label)
+            slider:SetPos(setting.pos[1], setting.pos[2])
+            slider:SetSize(antiaimPanel:GetWide() - 20, 40)
+            slider:SetMin(setting.min)
+            slider:SetMax(setting.max)
+            slider:SetDecimals(setting.decimals)
+            slider:SetValue(setting.default)
+        end
+    end
+end
+
+-- Commande pour ouvrir le menu
+concommand.Add("open_accurate_menu", CreateAccurateMenu)
